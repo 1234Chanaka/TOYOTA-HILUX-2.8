@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>TOYOTA HILUX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: url('https://tse4.mm.bing.net/th/id/OIP.bIM-emTYRSusMt1eS0kLmgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0 10px 40px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: space-between;
+      color: #fff;
+    }
+    h1 {
+      margin-top: 30px;
+      font-size: 1.5rem;
+      text-shadow: 1px 1px 4px #000;
+    }
+    .relay-card {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      margin: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      width: 160px;
+      font-size: 0.9rem;
+    }
+    .relay-card h2 {
+      margin-bottom: 5px;
+      font-size: 1rem;
+    }
+    .relay-card p {
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+    .relay-card button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.9rem;
+      width: 100%;
+      transition: 0.3s;
+      background-color: #1e88e5;
+    }
+    .relay-card button:hover {
+      opacity: 0.85;
+    }
+    #dashboard {
+      display: none;
+    }
+    #loginForm {
+      max-width: 360px;
+      margin: 60px auto 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    #loginForm input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 8px;
+    }
+    #loginForm button {
+      width: 100%;
+      background-color: #1e88e5;
+      color: white;
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+    }
+    #dashboard .relay-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    #logoutBtn {
+      max-width: 280px;
+      padding: 10px;
+      margin: 12px auto;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      display: block;
+      background-color: #555;
+    }
+    #logoutBtn:hover {
+      opacity: 0.85;
+    }
+    footer {
+      font-size: 0.8rem;
+      color: #eee;
+      padding: 10px 0;
+      margin-top: 20px;
+      text-shadow: 1px 1px 3px #000;
+    }
+    @media (max-width: 600px) {
+      .relay-card {
+        width: 90%;
+        margin: 10px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>TOYOTA HILUX</h1>
+
+  <!-- Login form -->
+  <div id="loginForm">
+    <input type="email" id="email" placeholder="Enter Email" required />
+    <input type="password" id="password" placeholder="Enter Password" required />
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <div class="relay-container">
+      <div class="relay-card">
+        <h2>LOCK</h2>
+        <p>Status: <span id="status1">Loading...</span></p>
+        <button id="btn1">Toggle</button>
+      </div>
+
+      <div class="relay-card">
+        <h2>UNLOCK</h2>
+        <p>Status: <span id="status2">Loading...</span></p>
+        <button id="btn2">Toggle</button>
+      </div>
+
+      <div class="relay-card">
+        <h2>ENGINE OFF</h2>
+        <p>Status: <span id="status3">Loading...</span></p>
+        <button id="btn3">Toggle</button>
+      </div>
+    </div>
+
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <footer>
+    Created by CHANAKA
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvlls83Wpw_UPmRkx4X75_zkyiieg4BC8",
+      authDomain: "chanaka-cab.firebaseapp.com",
+      databaseURL: "https://chanaka-cab-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "chanaka-cab",
+      storageBucket: "chanaka-cab.firebasestorage.app",
+      messagingSenderId: "601730014170",
+      appId: "1:601730014170:web:ccc17d1349a91f75cd3ee3"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const allowedEmail = "airroled@gmail.com";
+    const allowedPassword = "cha00134";
+
+    const loginForm = document.getElementById("loginForm");
+    const dashboard = document.getElementById("dashboard");
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("Please enter email and password.");
+        return;
+      }
+
+      if (email === allowedEmail && password === allowedPassword) {
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then(userCredential => {
+            loginForm.style.display = "none";
+            dashboard.style.display = "block";
+            startRelayControl();
+          })
+          .catch(error => {
+            alert("Firebase login failed: " + error.message);
+          });
+      } else {
+        alert("Invalid email or password.");
+      }
+    });
+
+    function startRelayControl() {
+      const db = firebase.database();
+      const relays = [
+        { id: 1, path: "lock" },
+        { id: 2, path: "unlock" },
+        { id: 3, path: "engine_off" }
+      ];
+
+      relays.forEach(relay => {
+        const statusText = document.getElementById(`status${relay.id}`);
+        const toggleButton = document.getElementById(`btn${relay.id}`);
+        const relayRef = db.ref("/" + relay.path);
+
+        relayRef.on("value", (snapshot) => {
+          const state = snapshot.val();
+          statusText.innerText = state ? "ON" : "OFF";
+          toggleButton.style.backgroundColor = state ? "#43a047" : "#1e88e5";
+        });
+
+        toggleButton.onclick = () => {
+          relayRef.get().then(snap => {
+            relayRef.set(!snap.val());
+          });
+        };
+      });
+    }
+
+    document.getElementById("logoutBtn").onclick = () => {
+      firebase.auth().signOut()
+        .then(() => {
+          dashboard.style.display = "none";
+          loginForm.style.display = "block";
+          document.getElementById("email").value = "";
+          document.getElementById("password").value = "";
+        })
+        .catch(error => {
+          alert("Logout failed: " + error.message);
+        });
+    };
+  </script>
+</body>
+</html>
+
